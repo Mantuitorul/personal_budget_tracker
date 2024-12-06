@@ -13,7 +13,7 @@ A simple and efficient personal budget tracking system that helps you monitor yo
 
 1. Clone the repository:
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/Mantuitorul/personal_budget_tracker
    cd personal_budget_tracker
    ```
 
