@@ -1,22 +1,34 @@
-# income/income_categories.py
-class IncomeCategories:
-    """Predefined income categories"""
-    
-    CATEGORIES = {
-        'SALARY': 'Regular employment income',
-        'FREELANCE': 'Freelance or contract work',
-        'INVESTMENT': 'Investment returns',
-        'RENTAL': 'Rental income',
-        'BUSINESS': 'Business income',
-        'OTHER': 'Other income sources'
-    }
+from enum import Enum
+from typing import List, Dict
 
-    @classmethod
-    def get_all_categories(cls) -> dict:
-        """Get all available income categories"""
-        return cls.CATEGORIES
+class IncomeCategory(Enum):
+    SALARY = "Salary"
+    FREELANCE = "Freelance"
+    INVESTMENTS = "Investments"
+    RENTAL = "Rental Income"
+    BUSINESS = "Business Income"
+    GIFTS = "Gifts"
+    OTHERS = "Other Income"
 
-    @classmethod
-    def is_valid_category(cls, category: str) -> bool:
+class IncomeCategoryManager:
+    def __init__(self):
+        self._custom_categories: Dict[str, str] = {}
+
+    def get_all_categories(self) -> Dict[str, str]:
+        """Get all categories (both default and custom)"""
+        categories = {category.name: category.value for category in IncomeCategory}
+        categories.update(self._custom_categories)
+        return categories
+
+    def add_custom_category(self, name: str, description: str) -> bool:
+        """Add a new custom category"""
+        if name.upper() in [category.name for category in IncomeCategory]:
+            return False
+        self._custom_categories[name.upper()] = description
+        return True
+
+    def is_valid_category(self, category: str) -> bool:
         """Check if a category is valid"""
-        return category.upper() in cls.CATEGORIES
+        category_upper = category.upper()
+        return (category_upper in [cat.name for cat in IncomeCategory] or
+                category_upper in self._custom_categories)
