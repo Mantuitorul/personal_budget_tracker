@@ -4,10 +4,36 @@ A simple and efficient personal budget tracking system that helps you monitor yo
 
 ## Features
 
-- Income tracking with categories
-- Expense tracking with categories
-- Basic analytics and reporting
-- Data visualization
+- Income management with customizable categories (salary, freelance, investments, etc.)
+- Expense tracking with predefined and custom categories
+- Database persistence using SQLite
+- Category-based financial analysis
+- Budget summaries and reporting
+- CSV export functionality for financial reports
+
+## Database Structure
+
+The application uses SQLite with four main tables:
+- income_entries: Stores all income transactions
+- expense_entries: Stores all expense transactions
+- custom_income_categories: Stores user-defined income categories
+- custom_expense_categories: Stores user-defined expense categories
+
+Database location: `data/budget.db` (created automatically)
+
+## Settings Configuration
+
+The application requires a `settings.py` file for configuration. Copy `example_settings.py` and modify as needed:
+
+```python
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+DATABASE = {
+    'path': BASE_DIR / 'data' / 'budget.db'
+}
+DEBUG = True
+VERSION = '1.0.0'
 
 ## Setup Instructions
 
