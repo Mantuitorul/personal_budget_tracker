@@ -1,6 +1,10 @@
+from src.analytics.budget_analyzer import BudgetAnalyzer
 from src.database import DatabaseManager
 from src.income import IncomeManager
 from src.expenses import ExpenseManager
+from datetime import datetime
+import argparse
+import sys
 
 def display_income_categories(income_manager):
     print("\nAvailable Income Categories:")
@@ -39,99 +43,134 @@ def display_budget_summary(income_manager, expense_manager):
     print(f"Current Balance: ${balance:.2f}")
     print("=" * 30)
 
-def main():
-    # Initialize database
-    db_manager = DatabaseManager()
+def add_income(income_manager):
+    print("\nAdding Income Entry")
+    print("Available categories:")
+    display_income_categories(income_manager)
+    
+    amount = float(input("Enter amount: $"))
+    source = input("Enter source: ")
+    category = input("Enter category (from above list): ").upper()
+    description = input("Enter description (optional): ")
+    
+    entry = income_manager.add_income(
+        amount=amount,
+        source=source,
+        category=category,
+        description=description
+    )
+    
+    if entry:
+        print("\nIncome entry added successfully!")
+    else:
+        print("\nFailed to add income entry. Please check the category.")
 
-    # Create manager instances
+def add_expense(expense_manager):
+    print("\nAdding Expense Entry")
+    print("Available categories:")
+    display_expense_categories(expense_manager)
+    
+    amount = float(input("Enter amount: $"))
+    vendor = input("Enter vendor: ")
+    category = input("Enter category (from above list): ").upper()
+    description = input("Enter description (optional): ")
+    
+    entry = expense_manager.add_expense(
+        amount=amount,
+        vendor=vendor,
+        category=category,
+        description=description
+    )
+    
+    if entry:
+        print("\nExpense entry added successfully!")
+    else:
+        print("\nFailed to add expense entry. Please check the category.")
+
+def add_custom_category(manager, type_str):
+    print(f"\nAdding Custom {type_str} Category")
+    name = input("Enter category name: ").upper()
+    description = input("Enter category description: ")
+    
+    success = manager.add_custom_category(name, description)
+    if success:
+        print(f"\nCustom {type_str} category added successfully!")
+    else:
+        print(f"\nFailed to add custom {type_str} category. Name might already exist.")
+
+def export_reports(analyzer):
+    year = int(input("Enter year (YYYY): "))
+    month = int(input("Enter month (1-12): "))
+    
+    try:
+        csv_path = analyzer.export_monthly_report_to_csv(year, month)
+        excel_path = analyzer.export_monthly_report_to_excel(year, month)
+        print(f"\nReports generated successfully:")
+        print(f"CSV Report: {csv_path}")
+        print(f"Excel Report: {excel_path}")
+    except Exception as e:
+        print(f"\nError generating reports: {str(e)}")
+
+def display_menu():
+    print("\n=== Personal Budget Tracker ===")
+    print("1. Add Income")
+    print("2. Add Expense")
+    print("3. Add Custom Income Category")
+    print("4. Add Custom Expense Category")
+    print("5. View Income Summary")
+    print("6. View Expense Summary")
+    print("7. View Budget Summary")
+    print("8. Export Reports")
+    print("9. View Categories")
+    print("0. Exit")
+    return input("Select an option: ")
+
+def interactive_mode(income_manager, expense_manager, analyzer):
+    while True:
+        choice = display_menu()
+        
+        if choice == "1":
+            add_income(income_manager)
+        elif choice == "2":
+            add_expense(expense_manager)
+        elif choice == "3":
+            add_custom_category(income_manager, "Income")
+        elif choice == "4":
+            add_custom_category(expense_manager, "Expense")
+        elif choice == "5":
+            display_income_summary(income_manager)
+        elif choice == "6":
+            display_expense_summary(expense_manager)
+        elif choice == "7":
+            display_budget_summary(income_manager, expense_manager)
+        elif choice == "8":
+            export_reports(analyzer)
+        elif choice == "9":
+            display_income_categories(income_manager)
+            display_expense_categories(expense_manager)
+        elif choice == "0":
+            print("\nThank you for using Personal Budget Tracker!")
+            break
+        else:
+            print("\nInvalid option. Please try again.")
+
+def main():
+    parser = argparse.ArgumentParser(description='Personal Budget Tracker')
+    parser.add_argument('--init-db', action='store_true', help='Initialize the database')
+    args = parser.parse_args()
+
+    # Initialize managers
+    db_manager = DatabaseManager()
     income_manager = IncomeManager(db_manager)
     expense_manager = ExpenseManager(db_manager)
+    analyzer = BudgetAnalyzer(income_manager, expense_manager)
 
-    # Display available categories
-    display_income_categories(income_manager)
-    display_expense_categories(expense_manager)
+    if args.init_db:
+        print("Database initialized successfully!")
+        return
 
-    # Add some income entries
-    income_entries = [
-        (3000.0, "Tech Corp", "SALARY", "Monthly salary"),
-        (500.0, "Freelance Project", "FREELANCE", "Website development"),
-        (1000.0, "Stock Dividends", "INVESTMENTS", "Q4 dividends"),
-        (800.0, "Apartment 3B", "RENTAL", "December rent")
-    ]
-
-    print("\nAdding income entries...")
-    for amount, source, category, description in income_entries:
-        income_manager.add_income(
-            amount=amount,
-            source=source,
-            category=category,
-            description=description
-        )
-
-    # Add custom income category and entry
-    print("\nAdding custom income category...")
-    income_manager.add_custom_category("YOUTUBE", "Income from YouTube channel")
-    income_manager.add_income(
-        amount=200.0,
-        source="YouTube",
-        category="YOUTUBE",
-        description="Ad revenue"
-    )
-
-    # Add some expense entries
-    expense_entries = [
-        (1200.0, "ABC Apartments", "HOUSING", "Monthly rent"),
-        (400.0, "Supermarket", "FOOD", "Groceries"),
-        (150.0, "Gas Station", "TRANSPORTATION", "Monthly fuel"),
-        (200.0, "Internet Provider", "UTILITIES", "Monthly internet"),
-        (300.0, "Amazon", "SHOPPING", "Electronics")
-    ]
-
-    print("\nAdding expense entries...")
-    for amount, vendor, category, description in expense_entries:
-        expense_manager.add_expense(
-            amount=amount,
-            vendor=vendor,
-            category=category,
-            description=description
-        )
-
-    # Add custom expense category and entry
-    print("\nAdding custom expense category...")
-    expense_manager.add_custom_category("PETS", "Pet-related expenses")
-    expense_manager.add_expense(
-        amount=100.0,
-        vendor="Pet Store",
-        category="PETS",
-        description="Dog food and supplies"
-    )
-
-    # Display all income entries
-    print("\nAll Income Entries:")
-    for entry in income_manager.get_all_income():
-        print(f"\nIncome Entry:")
-        print(f"Amount: ${entry.amount}")
-        print(f"Source: {entry.source}")
-        print(f"Category: {entry.category}")
-        print(f"Date: {entry.date}")
-        print(f"Description: {entry.description}")
-    print("-" * 30)
-
-    # Display all expense entries
-    print("\nAll Expense Entries:")
-    for entry in expense_manager.get_all_expenses():
-        print(f"\nExpense Entry:")
-        print(f"Amount: ${entry.amount}")
-        print(f"Vendor: {entry.vendor}")
-        print(f"Category: {entry.category}")
-        print(f"Date: {entry.date}")
-        print(f"Description: {entry.description}")
-    print("-" * 30)
-
-    # Display summaries
-    display_income_summary(income_manager)
-    display_expense_summary(expense_manager)
-    display_budget_summary(income_manager, expense_manager)
+    # Start interactive mode
+    interactive_mode(income_manager, expense_manager, analyzer)
 
 if __name__ == "__main__":
     main()
