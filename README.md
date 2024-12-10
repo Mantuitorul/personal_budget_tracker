@@ -34,7 +34,7 @@ DATABASE = {
 }
 DEBUG = True
 VERSION = '1.0.0'
-
+```
 ## Setup Instructions
 
 1. Clone the repository:
