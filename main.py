@@ -1,6 +1,8 @@
+from src.analytics.budget_analyzer import BudgetAnalyzer
 from src.database import DatabaseManager
 from src.income import IncomeManager
 from src.expenses import ExpenseManager
+from datetime import datetime
 
 def display_income_categories(income_manager):
     print("\nAvailable Income Categories:")
@@ -46,6 +48,9 @@ def main():
     # Create manager instances
     income_manager = IncomeManager(db_manager)
     expense_manager = ExpenseManager(db_manager)
+
+    # Create budget analyzer instance
+    analyzer = BudgetAnalyzer(income_manager, expense_manager)
 
     # Display available categories
     display_income_categories(income_manager)
@@ -132,6 +137,18 @@ def main():
     display_income_summary(income_manager)
     display_expense_summary(expense_manager)
     display_budget_summary(income_manager, expense_manager)
+
+    # Get current year and month for reports
+    current_year = datetime.now().year
+    current_month = datetime.now().month
+
+    # Export reports using the analyzer instance
+    csv_path = analyzer.export_monthly_report_to_csv(current_year, current_month)
+    excel_path = analyzer.export_monthly_report_to_excel(current_year, current_month)
+
+    print(f"\nReports generated:")
+    print(f"CSV Report: {csv_path}")
+    print(f"Excel Report: {excel_path}")
 
 if __name__ == "__main__":
     main()
