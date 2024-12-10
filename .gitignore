@@ -13,6 +13,7 @@ __pycache__/
 settings.py
 
 # Database files
+data/
 *.db
 *.sqlite3
 
