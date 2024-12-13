@@ -3,17 +3,18 @@ from typing import Optional
 import sqlite3
 from datetime import datetime
 from pathlib import Path
+from src.settings import DATABASE
 
 class DatabaseManager:
-    def __init__(self, db_path: Optional[str] = None):
+    def __init__(self, db_path: Optional[str | Path] = None):
         if db_path is None:
-            db_path = Path("data/budget.db")
+            db_path = DATABASE['path']
         
         # Ensure the data directory exists
         db_path.parent.mkdir(parents=True, exist_ok=True)
         
-        self.db_path = db_path
-        self._init_database()
+        self.db_path = Path(db_path).resolve()  # Convert to absolute path
+        self.db_path.parent.mkdir(parents=True, exist_ok=True)
 
     def _init_database(self) -> None:
         """Initialize the database with required tables"""
