@@ -12,7 +12,7 @@ from src.expenses import ExpenseManager
 from src.ui import run_cli 
 
 def main():
-    # Ensure correct working directory
+    # Ensure correct working directory, changes the working directory to where main.py is located
     os.chdir(Path(__file__).parent)
 
     parser = argparse.ArgumentParser(description='Personal Budget Tracker')

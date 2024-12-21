@@ -16,6 +16,7 @@ settings.py
 data/
 *.db
 *.sqlite3
+!sample_budget.db
 
 # VS Code settings
 .vscode/
