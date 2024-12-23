@@ -3,29 +3,57 @@
 ## Table of Contents
 1. [Overview](#overview)
 2. [Features](#features)
-3. [Database Structure](#database-structure)
-4. [Settings Configuration](#settings-configuration)
-5. [Setup Instructions](#setup-instructions)
-6. [Usage Guide](#usage-guide)
+3. [Project Structure](#project-structure)
+4. [Database Structure](#database-structure)
+5. [Settings Configuration](#settings-configuration)
+6. [Setup Instructions](#setup-instructions)
+7. [Usage Guide](#usage-guide)
    - [Managing Income](#managing-income)
    - [Managing Expenses](#managing-expenses)
    - [Viewing Reports](#viewing-reports)
    - [Exporting Data](#exporting-data)
-7. [Available Categories](#available-categories)
-8. [Dependencies](#dependencies)
+8. [Available Categories](#available-categories)
+9. [Dependencies](#dependencies)
 
 ## Overview
 A command-line application for personal finance management that helps users track their income and expenses, categorize transactions, and generate financial reports. This tool is designed to provide a simple yet effective way to maintain control over your personal finances.
 
 ## Features
-- Income management with customizable categories (salary, freelance, investments, etc.)
+- Income management with customizable categories
 - Expense tracking with predefined and custom categories
 - Database persistence using SQLite
 - Category-based financial analysis
 - Budget summaries and reporting
 - CSV and Excel export functionality for financial reports
 - Custom category creation for both income and expenses
-- Monthly trend analysis and financial summaries
+
+## Project Structure
+```
+personal_budget_tracker/
+│   .gitignore
+│   main.py
+│   README.md
+│   requirements.txt
+│   sample_budget.db
+│
+├───data/               # Database storage
+│       budget.db
+│
+├───reports/           # Generated reports
+│       budget_report_*.csv
+│       budget_report_*.xlsx
+│
+└───src/
+    │   example_settings.py
+    │   settings.py    # Created from example_settings.py
+    │   __init__.py
+    │
+    ├───analytics/     # Analysis and reporting
+    ├───database/      # Database management
+    ├───expenses/      # Expense tracking
+    ├───income/        # Income tracking
+    └───ui/           # User interface
+```
 
 ## Database Structure
 The application uses SQLite with four main tables:
@@ -34,18 +62,24 @@ The application uses SQLite with four main tables:
 - `custom_income_categories`: Stores user-defined income categories
 - `custom_expense_categories`: Stores user-defined expense categories
 
-Database location: `data/budget.db` (created automatically)
+Location: `data/budget.db` (created automatically on first run)
 
 ## Settings Configuration
-The application requires a `settings.py` file for configuration. Copy `example_settings.py` and modify as needed:
+1. The application requires a `settings.py` file in the `src` directory
+2. Copy `src/example_settings.py` to `src/settings.py` and modify as needed:
 
 ```python
 from pathlib import Path
 
+# Base directory of the project
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Database settings
 DATABASE = {
     'path': BASE_DIR / 'data' / 'budget.db'
 }
+
+# Application settings
 DEBUG = True
 VERSION = '1.0.0'
 ```
@@ -57,29 +91,30 @@ VERSION = '1.0.0'
    cd personal_budget_tracker
    ```
 
-2. Create a virtual environment:
+2. Create and activate a virtual environment:
    ```bash
    python -m venv .venv
+   
+   # Windows:
+   .venv\Scripts\activate
+   
+   # macOS/Linux:
+   source .venv/bin/activate
    ```
 
-3. Activate the virtual environment:
-   - Windows:
-     ```bash
-     .venv\Scripts\activate
-     ```
-   - macOS/Linux:
-     ```bash
-     source .venv/bin/activate
-     ```
-
-4. Install dependencies:
+3. Install dependencies:
    ```bash
    pip install -r requirements.txt
    ```
 
-5. Create your settings file:
-   - Copy `example_settings.py` to `settings.py`
-   - Update the database configurations in `settings.py`
+4. Configure settings:
+   - Copy `src/example_settings.py` to `src/settings.py`
+   - Update configurations if needed (database path, debug mode)
+
+5. Create required directories:
+   ```bash
+   mkdir data reports
+   ```
 
 6. Initialize the database:
    ```bash
@@ -94,10 +129,8 @@ VERSION = '1.0.0'
 ## Usage Guide
 
 ### Managing Income
-The application allows you to track various types of income:
-
 ```python
-# Adding a regular income entry
+# Adding income entry
 income_manager.add_income(
     amount=3000.0,
     source="Tech Corp",
@@ -105,23 +138,13 @@ income_manager.add_income(
     description="Monthly salary"
 )
 
-# Adding a custom income category
+# Adding custom income category
 income_manager.add_custom_category("YOUTUBE", "Income from YouTube channel")
-
-# Adding income with custom category
-income_manager.add_income(
-    amount=200.0,
-    source="YouTube",
-    category="YOUTUBE",
-    description="Ad revenue"
-)
 ```
 
 ### Managing Expenses
-Track your expenses with predefined or custom categories:
-
 ```python
-# Adding a regular expense
+# Adding expense
 expense_manager.add_expense(
     amount=1200.0,
     vendor="ABC Apartments",
@@ -129,46 +152,27 @@ expense_manager.add_expense(
     description="Monthly rent"
 )
 
-# Adding a custom expense category
+# Adding custom expense category
 expense_manager.add_custom_category("PETS", "Pet-related expenses")
-
-# Adding expense with custom category
-expense_manager.add_expense(
-    amount=100.0,
-    vendor="Pet Store",
-    category="PETS",
-    description="Dog food and supplies"
-)
 ```
 
 ### Viewing Reports
-The application provides several ways to view your financial data:
+```python
+# View category summaries
+income_manager.get_category_summary()
+expense_manager.get_category_summary()
 
-1. View Income Summary:
-   ```python
-   income_manager.get_category_summary()
-   ```
-
-2. View Expense Summary:
-   ```python
-   expense_manager.get_category_summary()
-   ```
-
-3. View Budget Analysis:
-   ```python
-   analyzer.get_monthly_summary(year, month)
-   analyzer.get_category_analysis(year, month)
-   analyzer.get_trend_analysis(months=6)
-   ```
+# View detailed analysis
+analyzer.get_monthly_summary(year, month)
+analyzer.get_category_analysis(year, month)
+analyzer.get_trend_analysis(months=6)
+```
 
 ### Exporting Data
-Export your financial data in CSV or Excel format:
-
+Reports are automatically saved in the reports/ directory (created automatically if it doesn't exist):
 ```python
-# Export monthly report to CSV
+# Export monthly reports
 analyzer.export_monthly_report_to_csv(year, month)
-
-# Export monthly report to Excel
 analyzer.export_monthly_report_to_excel(year, month)
 ```
 
@@ -199,10 +203,9 @@ analyzer.export_monthly_report_to_excel(year, month)
 
 ## Dependencies
 Key dependencies include:
-- python-dotenv
-- SQLAlchemy
-- pandas
-- matplotlib
-- openpyxl
+- SQLAlchemy: Database ORM
+- pandas: Data analysis and Excel export
+- matplotlib: Visualization
+- openpyxl: Excel file handling
 
-See `requirements.txt` for a complete list of dependencies.
+For a complete list of dependencies, see `requirements.txt`.
