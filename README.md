@@ -111,20 +111,17 @@ VERSION = '1.0.0'
    - Copy `src/example_settings.py` to `src/settings.py`
    - Update configurations if needed (database path, debug mode)
 
-5. Create required directories:
-   ```bash
-   mkdir data reports
-   ```
-
-6. Initialize the database:
+5. Initialize the database:
    ```bash
    python main.py --init-db
    ```
 
-7. Run the application:
+6. Run the application:
    ```bash
    python main.py
    ```
+
+> A `sample_data.db` has been provided in the repo. You can use that with the `sample_settings.py` (don't forget to rename them to `settings.py` in the `/src`). All you need to do is to copy `sample_data.db` to data folder in the root directory and rename it to `data.db`. This should work if you didn't make any modifications to `settings.py` provided.
 
 ## Usage Guide
 
