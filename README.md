@@ -121,7 +121,7 @@ VERSION = '1.0.0'
    python main.py
    ```
 
-> A `sample_data.db` has been provided in the repo. You can use that with the `sample_settings.py` (don't forget to rename them to `settings.py` in the `/src`). All you need to do is to copy `sample_data.db` to data folder in the root directory and rename it to `data.db`. This should work if you didn't make any modifications to `settings.py` provided.
+> A `sample_budget.db` has been provided in the repo. You can use that with the `sample_settings.py` (don't forget to rename them to `settings.py` in the `/src`). All you need to do is to copy `sample_budget.db` to data folder in the root directory and rename it to `budget.db`. This should work if you didn't make any modifications to `settings.py` provided.
 
 ## Usage Guide
 
