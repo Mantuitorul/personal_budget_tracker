@@ -15,6 +15,9 @@ class DatabaseManager:
         
         self.db_path = Path(db_path).resolve()  # Convert to absolute path
         self.db_path.parent.mkdir(parents=True, exist_ok=True)
+        
+        # Initialize the database
+        self._init_database()
 
     def _init_database(self) -> None:
         """Initialize the database with required tables"""
